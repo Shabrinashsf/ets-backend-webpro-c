@@ -17,6 +17,7 @@ type (
 		Register(ctx context.Context, req dto.UserRegisterRequest) (dto.UserRegisterResponse, error)
 		Login(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error)
 		GetMe(ctx context.Context, userID string) (dto.GetMeResponse, error)
+		Update(ctx context.Context, req dto.UpdateRequest, userID string) (dto.GetMeResponse, error)
 	}
 
 	userService struct {
@@ -102,5 +103,27 @@ func (s *userService) GetMe(ctx context.Context, userID string) (dto.GetMeRespon
 		Name:       user.Name,
 		TelpNumber: user.TelpNumber,
 		Email:      user.Email,
+	}, nil
+}
+
+func (s *userService) Update(ctx context.Context, req dto.UpdateRequest, userID string) (dto.GetMeResponse, error) {
+	user, err := s.userRepo.GetUserByID(ctx, nil, uuid.MustParse(userID))
+	if err != nil {
+		return dto.GetMeResponse{}, dto.ErrGetUserById
+	}
+
+	user.Name = req.Name
+	user.TelpNumber = req.TelpNumber
+	user.Email = req.Email
+
+	userUpdate, err := s.userRepo.Update(ctx, nil, user)
+	if err != nil {
+		return dto.GetMeResponse{}, dto.ErrGetUserById
+	}
+
+	return dto.GetMeResponse{
+		Name:       userUpdate.Name,
+		TelpNumber: userUpdate.TelpNumber,
+		Email:      userUpdate.Email,
 	}, nil
 }

@@ -13,6 +13,7 @@ type (
 		Register(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error)
 		CheckEmail(ctx context.Context, tx *gorm.DB, email string) (entity.User, bool, error)
 		GetUserByID(ctx context.Context, tx *gorm.DB, id uuid.UUID) (entity.User, error)
+		Update(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error)
 	}
 
 	userRepository struct {
@@ -58,6 +59,18 @@ func (r *userRepository) GetUserByID(ctx context.Context, tx *gorm.DB, id uuid.U
 
 	var user entity.User
 	if err := tx.WithContext(ctx).Where("id = ?", id).Take(&user).Error; err != nil {
+		return entity.User{}, err
+	}
+
+	return user, nil
+}
+
+func (r *userRepository) Update(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	if err := tx.WithContext(ctx).Model(&user).Updates(user).Error; err != nil {
 		return entity.User{}, err
 	}
 

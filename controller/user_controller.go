@@ -14,6 +14,7 @@ type (
 		Register(ctx *gin.Context)
 		Login(ctx *gin.Context)
 		GetMe(ctx *gin.Context)
+		Update(ctx *gin.Context)
 	}
 
 	userController struct {
@@ -75,5 +76,25 @@ func (c *userController) GetMe(ctx *gin.Context) {
 	}
 
 	res := response.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_USER, result)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *userController) Update(ctx *gin.Context) {
+	var user dto.UpdateRequest
+	if err := ctx.ShouldBind(&user); err != nil {
+		res := response.BuildResponseFailed(dto.MESSAGE_FAILED_UPDATE_USER, err.Error(), nil)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	idparam := ctx.Param("id")
+	result, err := c.userService.Update(ctx.Request.Context(), user, idparam)
+	if err != nil {
+		res := response.BuildResponseFailed(dto.MESSAGE_FAILED_UPDATE_USER, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := response.BuildResponseSuccess(dto.MESSAGE_SUCCESS_UPDATE_USER, result)
 	ctx.JSON(http.StatusOK, res)
 }

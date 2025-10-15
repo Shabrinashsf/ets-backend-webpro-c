@@ -11,11 +11,13 @@ const (
 	MESSAGE_FAILED_DENIED_ACCESS   = "denied access"
 	MESSAGE_FAILED_LOGIN_USER      = "failed login user"
 	MESSAGE_FAILED_GET_USER        = "failed get user"
+	MESSAGE_FAILED_UPDATE_USER     = "failed update user"
 
 	// Success
 	MESSAGE_SUCCESS_REGISTER_USER = "success create user"
 	MESSAGE_SUCCESS_LOGIN_USER    = "success login user"
 	MESSAGE_SUCCESS_GET_USER      = "success get user"
+	MESSAGE_SUCCESS_UPDATE_USER   = "success update user"
 )
 
 var (
@@ -54,6 +56,12 @@ type (
 	}
 
 	GetMeResponse struct {
+		Name       string `json:"name"`
+		TelpNumber string `json:"telp_number"`
+		Email      string `json:"email"`
+	}
+
+	UpdateRequest struct {
 		Name       string `json:"name"`
 		TelpNumber string `json:"telp_number"`
 		Email      string `json:"email"`
