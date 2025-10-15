@@ -30,12 +30,15 @@ func main() {
 		// Implementation Dependency Injection
 		// Repository
 		userRepository repository.UserRepository = repository.NewUserRepository(db)
+		roomRepository repository.RoomRepository = repository.NewRoomRepository(db)
 
 		// Service
 		userService service.UserService = service.NewUserService(userRepository, jwtService)
+		roomService service.RoomService = service.NewRoomService(roomRepository)
 
 		// Controller
 		userController controller.UserController = controller.NewUserController(userService)
+		roomController controller.RoomController = controller.NewRoomController(roomService)
 	)
 
 	server := gin.Default()
@@ -56,6 +59,7 @@ func main() {
 
 	// routes
 	routes.User(server, userController, jwtService)
+	routes.Room(server, roomController, jwtService)
 
 	server.Static("/assets", "./assets")
 	port := os.Getenv("PORT")

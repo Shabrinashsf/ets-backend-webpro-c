@@ -22,6 +22,7 @@ var (
 	ErrEmailNotFound      = errors.New("email not found")
 	ErrAccountNotVerified = errors.New("account not verified")
 	ErrPasswordNotMatch   = errors.New("password not match")
+	ErrRoleNotAllowed     = errors.New("role not allowed")
 )
 
 type (
