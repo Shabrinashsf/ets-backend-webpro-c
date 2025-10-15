@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Shabrinashsf/ets-backend-webpro-c/entity"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -11,6 +12,8 @@ type (
 	RoomRepository interface {
 		CheckRoom(ctx context.Context, tx *gorm.DB, number int) (entity.Room, bool, error)
 		AddRoom(ctx context.Context, tx *gorm.DB, room entity.Room) (entity.Room, error)
+		GetRoomByID(ctx context.Context, tx *gorm.DB, id uuid.UUID) (entity.Room, error)
+		UpdateRoom(ctx context.Context, tx *gorm.DB, room entity.Room) (entity.Room, error)
 	}
 
 	roomRepository struct {
@@ -43,6 +46,31 @@ func (r *roomRepository) AddRoom(ctx context.Context, tx *gorm.DB, room entity.R
 	}
 
 	if err := tx.WithContext(ctx).Create(&room).Error; err != nil {
+		return entity.Room{}, err
+	}
+
+	return room, nil
+}
+
+func (r *roomRepository) GetRoomByID(ctx context.Context, tx *gorm.DB, id uuid.UUID) (entity.Room, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var room entity.Room
+	if err := tx.WithContext(ctx).Where("id = ?", id).Take(&room).Error; err != nil {
+		return entity.Room{}, err
+	}
+
+	return room, nil
+}
+
+func (r *roomRepository) UpdateRoom(ctx context.Context, tx *gorm.DB, room entity.Room) (entity.Room, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	if err := tx.WithContext(ctx).Model(&room).Updates(room).Error; err != nil {
 		return entity.Room{}, err
 	}
 

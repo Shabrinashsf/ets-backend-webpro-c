@@ -12,6 +12,7 @@ import (
 type (
 	RoomService interface {
 		AddRoom(ctx context.Context, req dto.AddRoomRequest) (dto.AddRoomResponse, error)
+		UpdateRoom(ctx context.Context, req dto.UpdateRoomRequest, idparam string) (dto.AddRoomResponse, error)
 	}
 
 	roomService struct {
@@ -51,5 +52,26 @@ func (s *roomService) AddRoom(ctx context.Context, req dto.AddRoomRequest) (dto.
 		TypeID: roomAdd.RoomTypeID.String(),
 		Number: roomAdd.Number,
 		Status: roomAdd.Status,
+	}, nil
+}
+
+func (s *roomService) UpdateRoom(ctx context.Context, req dto.UpdateRoomRequest, idparam string) (dto.AddRoomResponse, error) {
+	room, err := s.roomRepo.GetRoomByID(ctx, nil, uuid.MustParse(idparam))
+	if err != nil {
+		return dto.AddRoomResponse{}, dto.ErrRoomNotFound
+	}
+
+	room.RoomTypeID = uuid.MustParse(req.TypeID)
+	room.Status = req.Status
+
+	roomUpdate, err := s.roomRepo.UpdateRoom(ctx, nil, room)
+	if err != nil {
+		return dto.AddRoomResponse{}, dto.ErrUpdateRoom
+	}
+
+	return dto.AddRoomResponse{
+		Number: roomUpdate.Number,
+		TypeID: roomUpdate.RoomTypeID.String(),
+		Status: roomUpdate.Status,
 	}, nil
 }
