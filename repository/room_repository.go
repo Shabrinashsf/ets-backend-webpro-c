@@ -14,6 +14,8 @@ type (
 		AddRoom(ctx context.Context, tx *gorm.DB, room entity.Room) (entity.Room, error)
 		GetRoomByID(ctx context.Context, tx *gorm.DB, id uuid.UUID) (entity.Room, error)
 		UpdateRoom(ctx context.Context, tx *gorm.DB, room entity.Room) (entity.Room, error)
+		DeleteRoom(ctx context.Context, tx *gorm.DB, room entity.Room) error
+		GetRoomTypeByID(ctx context.Context, tx *gorm.DB, id uuid.UUID) (entity.RoomType, error)
 	}
 
 	roomRepository struct {
@@ -75,4 +77,29 @@ func (r *roomRepository) UpdateRoom(ctx context.Context, tx *gorm.DB, room entit
 	}
 
 	return room, nil
+}
+
+func (r *roomRepository) DeleteRoom(ctx context.Context, tx *gorm.DB, room entity.Room) error {
+	if tx == nil {
+		tx = r.db
+	}
+
+	if err := tx.WithContext(ctx).Delete(&room).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *roomRepository) GetRoomTypeByID(ctx context.Context, tx *gorm.DB, id uuid.UUID) (entity.RoomType, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var roomType entity.RoomType
+	if err := tx.WithContext(ctx).Where("id = ?", id).Take(&roomType).Error; err != nil {
+		return entity.RoomType{}, err
+	}
+
+	return roomType, nil
 }

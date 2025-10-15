@@ -13,6 +13,7 @@ type (
 	RoomService interface {
 		AddRoom(ctx context.Context, req dto.AddRoomRequest) (dto.AddRoomResponse, error)
 		UpdateRoom(ctx context.Context, req dto.UpdateRoomRequest, idparam string) (dto.AddRoomResponse, error)
+		DeleteRoom(ctx context.Context, idparam string) (dto.DeleteRoomResponse, error)
 	}
 
 	roomService struct {
@@ -73,5 +74,34 @@ func (s *roomService) UpdateRoom(ctx context.Context, req dto.UpdateRoomRequest,
 		Number: roomUpdate.Number,
 		TypeID: roomUpdate.RoomTypeID.String(),
 		Status: roomUpdate.Status,
+	}, nil
+}
+
+func (s *roomService) DeleteRoom(ctx context.Context, idparam string) (dto.DeleteRoomResponse, error) {
+	room, err := s.roomRepo.GetRoomByID(ctx, nil, uuid.MustParse(idparam))
+	if err != nil {
+		return dto.DeleteRoomResponse{}, dto.ErrRoomNotFound
+	}
+
+	// ngambil entitiy roomtype berdasarkan room.RoomTypeID
+	roomTypeName, err := s.roomRepo.GetRoomTypeByID(ctx, nil, room.RoomTypeID)
+	if err != nil {
+		return dto.DeleteRoomResponse{}, dto.ErrRoomTypeNotFound
+	}
+
+	res := s.roomRepo.DeleteRoom(ctx, nil, room)
+	if res != nil {
+		return dto.DeleteRoomResponse{}, dto.ErrDeleteRoom
+	}
+
+	return dto.DeleteRoomResponse{
+		RoomTypeName: roomTypeName.Name,
+		Number:       room.Number,
+		Status:       room.Status,
+		Timestamp: dto.Timestamp{
+			CreatedAt: room.CreatedAt,
+			UpdatedAt: room.UpdatedAt,
+			DeletedAt: &room.DeletedAt.Time,
+		},
 	}, nil
 }

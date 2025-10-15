@@ -13,6 +13,7 @@ type (
 	RoomController interface {
 		AddRoom(ctx *gin.Context)
 		UpdateRoom(ctx *gin.Context)
+		DeleteRoom(ctx *gin.Context)
 	}
 
 	roomController struct {
@@ -62,5 +63,18 @@ func (c *roomController) UpdateRoom(ctx *gin.Context) {
 	}
 
 	res := response.BuildResponseSuccess(dto.MESSAGE_SUCCESS_UPDATE_ROOM, result)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *roomController) DeleteRoom(ctx *gin.Context) {
+	idparam := ctx.Param("id")
+	result, err := c.roomService.DeleteRoom(ctx.Request.Context(), idparam)
+	if err != nil {
+		res := response.BuildResponseFailed(dto.MESSAGE_FAILED_DELETE_ROOM, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := response.BuildResponseSuccess(dto.MESSAGE_SUCCESS_DELETE_ROOM, result)
 	ctx.JSON(http.StatusOK, res)
 }
