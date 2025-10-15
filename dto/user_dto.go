@@ -9,14 +9,19 @@ const (
 	MESSAGE_FAILED_TOKEN_NOT_FOUND = "token not found"
 	MESSAGE_FAILED_TOKEN_NOT_VALID = "token not valid"
 	MESSAGE_FAILED_DENIED_ACCESS   = "denied access"
+	MESSAGE_FAILED_LOGIN_USER      = "failed login user"
 
 	// Success
 	MESSAGE_SUCCESS_REGISTER_USER = "success create user"
+	MESSAGE_SUCCESS_LOGIN_USER    = "success login user"
 )
 
 var (
 	ErrEmailAlreadyExists = errors.New("email already exists")
 	ErrCreateUser         = errors.New("failed to create user")
+	ErrEmailNotFound      = errors.New("email not found")
+	ErrAccountNotVerified = errors.New("account not verified")
+	ErrPasswordNotMatch   = errors.New("password not match")
 )
 
 type (
@@ -32,5 +37,15 @@ type (
 		TelpNumber string `json:"telp_number"`
 		Email      string `json:"email"`
 		IsVerified bool   `json:"is_verified"`
+	}
+
+	UserLoginRequest struct {
+		Email    string `json:"email" form:"email"`
+		Password string `json:"password" form:"password"`
+	}
+
+	UserLoginResponse struct {
+		Token string `json:"token"`
+		Role  string `json:"role"`
 	}
 )

@@ -6,6 +6,7 @@ import (
 	"github.com/Shabrinashsf/ets-backend-webpro-c/constants"
 	"github.com/Shabrinashsf/ets-backend-webpro-c/dto"
 	"github.com/Shabrinashsf/ets-backend-webpro-c/entity"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/helpers"
 	"github.com/Shabrinashsf/ets-backend-webpro-c/repository"
 	"github.com/Shabrinashsf/ets-backend-webpro-c/utils/mailer"
 )
@@ -13,6 +14,7 @@ import (
 type (
 	UserService interface {
 		Register(ctx context.Context, req dto.UserRegisterRequest) (dto.UserRegisterResponse, error)
+		Login(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error)
 	}
 
 	userService struct {
@@ -63,5 +65,27 @@ func (s *userService) Register(ctx context.Context, req dto.UserRegisterRequest)
 		TelpNumber: userReg.TelpNumber,
 		Email:      userReg.Email,
 		IsVerified: userReg.IsVerified,
+	}, nil
+}
+
+func (s *userService) Login(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error) {
+	check, flag, err := s.userRepo.CheckEmail(ctx, nil, req.Email)
+	if err != nil || !flag {
+		return dto.UserLoginResponse{}, dto.ErrEmailNotFound
+	}
+
+	if !check.IsVerified {
+		return dto.UserLoginResponse{}, dto.ErrAccountNotVerified
+	}
+
+	checkPass, err := helpers.CheckPassword(check.Password, []byte(req.Password))
+	if err != nil || !checkPass {
+		return dto.UserLoginResponse{}, dto.ErrPasswordNotMatch
+	}
+
+	token := s.jwtService.GenerateToken(check.ID.String(), check.Role)
+	return dto.UserLoginResponse{
+		Token: token,
+		Role:  check.Role,
 	}, nil
 }

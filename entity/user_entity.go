@@ -2,7 +2,7 @@ package entity
 
 import (
 	"github.com/Shabrinashsf/ets-backend-webpro-c/helpers"
-	uuid "github.com/jackc/pgtype/ext/gofrs-uuid"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
