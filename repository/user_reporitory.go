@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Shabrinashsf/ets-backend-webpro-c/entity"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -11,6 +12,7 @@ type (
 	UserRepository interface {
 		Register(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error)
 		CheckEmail(ctx context.Context, tx *gorm.DB, email string) (entity.User, bool, error)
+		GetUserByID(ctx context.Context, tx *gorm.DB, id uuid.UUID) (entity.User, error)
 	}
 
 	userRepository struct {
@@ -47,4 +49,17 @@ func (r *userRepository) CheckEmail(ctx context.Context, tx *gorm.DB, email stri
 	}
 
 	return user, true, nil
+}
+
+func (r *userRepository) GetUserByID(ctx context.Context, tx *gorm.DB, id uuid.UUID) (entity.User, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var user entity.User
+	if err := tx.WithContext(ctx).Where("id = ?", id).Take(&user).Error; err != nil {
+		return entity.User{}, err
+	}
+
+	return user, nil
 }

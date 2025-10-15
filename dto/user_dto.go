@@ -10,10 +10,12 @@ const (
 	MESSAGE_FAILED_TOKEN_NOT_VALID = "token not valid"
 	MESSAGE_FAILED_DENIED_ACCESS   = "denied access"
 	MESSAGE_FAILED_LOGIN_USER      = "failed login user"
+	MESSAGE_FAILED_GET_USER        = "failed get user"
 
 	// Success
 	MESSAGE_SUCCESS_REGISTER_USER = "success create user"
 	MESSAGE_SUCCESS_LOGIN_USER    = "success login user"
+	MESSAGE_SUCCESS_GET_USER      = "success get user"
 )
 
 var (
@@ -23,6 +25,7 @@ var (
 	ErrAccountNotVerified = errors.New("account not verified")
 	ErrPasswordNotMatch   = errors.New("password not match")
 	ErrRoleNotAllowed     = errors.New("role not allowed")
+	ErrGetUserById        = errors.New("failed get user by id")
 )
 
 type (
@@ -48,5 +51,11 @@ type (
 	UserLoginResponse struct {
 		Token string `json:"token"`
 		Role  string `json:"role"`
+	}
+
+	GetMeResponse struct {
+		Name       string `json:"name"`
+		TelpNumber string `json:"telp_number"`
+		Email      string `json:"email"`
 	}
 )

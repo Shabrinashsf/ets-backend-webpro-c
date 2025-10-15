@@ -13,6 +13,7 @@ type (
 	UserController interface {
 		Register(ctx *gin.Context)
 		Login(ctx *gin.Context)
+		GetMe(ctx *gin.Context)
 	}
 
 	userController struct {
@@ -60,5 +61,19 @@ func (c *userController) Login(ctx *gin.Context) {
 	}
 
 	res := response.BuildResponseSuccess(dto.MESSAGE_SUCCESS_LOGIN_USER, result)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *userController) GetMe(ctx *gin.Context) {
+	userID := ctx.MustGet("user_id").(string)
+
+	result, err := c.userService.GetMe(ctx.Request.Context(), userID)
+	if err != nil {
+		res := response.BuildResponseFailed(dto.MESSAGE_FAILED_GET_USER, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := response.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_USER, result)
 	ctx.JSON(http.StatusOK, res)
 }

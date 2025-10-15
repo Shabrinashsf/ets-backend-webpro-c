@@ -9,12 +9,14 @@ import (
 	"github.com/Shabrinashsf/ets-backend-webpro-c/helpers"
 	"github.com/Shabrinashsf/ets-backend-webpro-c/repository"
 	"github.com/Shabrinashsf/ets-backend-webpro-c/utils/mailer"
+	"github.com/google/uuid"
 )
 
 type (
 	UserService interface {
 		Register(ctx context.Context, req dto.UserRegisterRequest) (dto.UserRegisterResponse, error)
 		Login(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error)
+		GetMe(ctx context.Context, userID string) (dto.GetMeResponse, error)
 	}
 
 	userService struct {
@@ -87,5 +89,18 @@ func (s *userService) Login(ctx context.Context, req dto.UserLoginRequest) (dto.
 	return dto.UserLoginResponse{
 		Token: token,
 		Role:  check.Role,
+	}, nil
+}
+
+func (s *userService) GetMe(ctx context.Context, userID string) (dto.GetMeResponse, error) {
+	user, err := s.userRepo.GetUserByID(ctx, nil, uuid.MustParse(userID))
+	if err != nil {
+		return dto.GetMeResponse{}, dto.ErrGetUserById
+	}
+
+	return dto.GetMeResponse{
+		Name:       user.Name,
+		TelpNumber: user.TelpNumber,
+		Email:      user.Email,
 	}, nil
 }
