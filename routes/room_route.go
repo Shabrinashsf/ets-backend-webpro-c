@@ -14,5 +14,6 @@ func Room(route *gin.Engine, roomController controller.RoomController, jwtServic
 		routes.POST("/add", middleware.Authenticate(jwtService), middleware.OnlyAllow(string(constants.ENUM_ROLE_ADMIN)), roomController.AddRoom)
 		routes.PUT("/:id", middleware.Authenticate(jwtService), middleware.OnlyAllow(string(constants.ENUM_ROLE_ADMIN)), roomController.UpdateRoom)
 		routes.DELETE("/:id", middleware.Authenticate(jwtService), middleware.OnlyAllow(string(constants.ENUM_ROLE_ADMIN)), roomController.DeleteRoom)
+		routes.GET("/", roomController.GetAllRoom)
 	}
 }

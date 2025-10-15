@@ -6,6 +6,7 @@ import (
 	"github.com/Shabrinashsf/ets-backend-webpro-c/dto"
 	"github.com/Shabrinashsf/ets-backend-webpro-c/entity"
 	"github.com/Shabrinashsf/ets-backend-webpro-c/repository"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/utils/pagination"
 	"github.com/google/uuid"
 )
 
@@ -14,6 +15,7 @@ type (
 		AddRoom(ctx context.Context, req dto.AddRoomRequest) (dto.AddRoomResponse, error)
 		UpdateRoom(ctx context.Context, req dto.UpdateRoomRequest, idparam string) (dto.AddRoomResponse, error)
 		DeleteRoom(ctx context.Context, idparam string) (dto.DeleteRoomResponse, error)
+		GetAllRoom(ctx context.Context, page, limit int) (dto.PaginatedRoomsResponse, error)
 	}
 
 	roomService struct {
@@ -103,5 +105,34 @@ func (s *roomService) DeleteRoom(ctx context.Context, idparam string) (dto.Delet
 			UpdatedAt: room.UpdatedAt,
 			DeletedAt: &room.DeletedAt.Time,
 		},
+	}, nil
+}
+
+func (s *roomService) GetAllRoom(ctx context.Context, page, limit int) (dto.PaginatedRoomsResponse, error) {
+	p := pagination.Pagination{Page: page, Limit: limit}
+	offset := p.GetOffset()
+
+	rooms, total, err := s.roomRepo.GetAllRoom(ctx, nil, offset, p.Limit)
+	if err != nil {
+		return dto.PaginatedRoomsResponse{}, err
+	}
+
+	var roomResponses []dto.GetRoomResponse
+	for _, room := range rooms {
+		roomTypeName, err := s.roomRepo.GetRoomTypeByID(ctx, nil, room.RoomTypeID)
+		if err != nil {
+			return dto.PaginatedRoomsResponse{}, dto.ErrRoomTypeNotFound
+		}
+
+		roomResponses = append(roomResponses, dto.GetRoomResponse{
+			Number:       room.Number,
+			RoomTypeName: roomTypeName.Name,
+			Status:       room.Status,
+		})
+	}
+
+	return dto.PaginatedRoomsResponse{
+		Data:       roomResponses,
+		Pagination: pagination.BuildPaginationResponse(page, limit, total),
 	}, nil
 }

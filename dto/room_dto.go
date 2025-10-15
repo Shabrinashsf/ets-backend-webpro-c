@@ -3,6 +3,8 @@ package dto
 import (
 	"errors"
 	"time"
+
+	"github.com/Shabrinashsf/ets-backend-webpro-c/utils/pagination"
 )
 
 const (
@@ -10,11 +12,13 @@ const (
 	MESSAGE_FAILED_ADD_ROOM    = "Failed to add room"
 	MESSAGE_FAILED_UPDATE_ROOM = "Failed to update room"
 	MESSAGE_FAILED_DELETE_ROOM = "Failed to delete room"
+	MESSAGE_FAILED_GET_ROOMS   = "Failed to get rooms"
 
 	// Success
 	MESSAGE_SUCCESS_ADD_ROOM    = "Success to add room"
 	MESSAGE_SUCCESS_UPDATE_ROOM = "Success to update room"
 	MESSAGE_SUCCESS_DELETE_ROOM = "Success to delete room"
+	MESSAGE_SUCCESS_GET_ROOMS   = "Success to get rooms"
 )
 
 var (
@@ -58,5 +62,16 @@ type (
 		Number       int    `json:"number"`
 		Status       string `json:"status"`
 		Timestamp
+	}
+
+	GetRoomResponse struct {
+		Number       int    `json:"number"`
+		RoomTypeName string `json:"room_type_name"`
+		Status       string `json:"status"`
+	}
+
+	PaginatedRoomsResponse struct {
+		Data       []GetRoomResponse             `json:"data"`
+		Pagination pagination.PaginationResponse `json:"pagination"`
 	}
 )

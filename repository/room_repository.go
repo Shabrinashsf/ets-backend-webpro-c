@@ -16,6 +16,7 @@ type (
 		UpdateRoom(ctx context.Context, tx *gorm.DB, room entity.Room) (entity.Room, error)
 		DeleteRoom(ctx context.Context, tx *gorm.DB, room entity.Room) error
 		GetRoomTypeByID(ctx context.Context, tx *gorm.DB, id uuid.UUID) (entity.RoomType, error)
+		GetAllRoom(ctx context.Context, tx *gorm.DB, offset, limit int) ([]entity.Room, int64, error)
 	}
 
 	roomRepository struct {
@@ -102,4 +103,23 @@ func (r *roomRepository) GetRoomTypeByID(ctx context.Context, tx *gorm.DB, id uu
 	}
 
 	return roomType, nil
+}
+
+func (r *roomRepository) GetAllRoom(ctx context.Context, tx *gorm.DB, offset, limit int) ([]entity.Room, int64, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var rooms []entity.Room
+	var total int64
+
+	if err := tx.WithContext(ctx).Model(&entity.Room{}).Where("deleted_at IS NULL").Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := tx.WithContext(ctx).Where("deleted_at IS NULL").Limit(limit).Offset(offset).Find(&rooms).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return rooms, total, nil
 }

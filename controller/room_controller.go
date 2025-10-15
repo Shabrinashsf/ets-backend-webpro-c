@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/Shabrinashsf/ets-backend-webpro-c/dto"
 	"github.com/Shabrinashsf/ets-backend-webpro-c/service"
@@ -14,6 +15,7 @@ type (
 		AddRoom(ctx *gin.Context)
 		UpdateRoom(ctx *gin.Context)
 		DeleteRoom(ctx *gin.Context)
+		GetAllRoom(ctx *gin.Context)
 	}
 
 	roomController struct {
@@ -76,5 +78,20 @@ func (c *roomController) DeleteRoom(ctx *gin.Context) {
 	}
 
 	res := response.BuildResponseSuccess(dto.MESSAGE_SUCCESS_DELETE_ROOM, result)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *roomController) GetAllRoom(ctx *gin.Context) {
+	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
+
+	result, err := c.roomService.GetAllRoom(ctx.Request.Context(), page, limit)
+	if err != nil {
+		res := response.BuildResponseFailed(dto.MESSAGE_FAILED_GET_ROOMS, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := response.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_ROOMS, result)
 	ctx.JSON(http.StatusOK, res)
 }
