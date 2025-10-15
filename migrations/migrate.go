@@ -1,7 +1,7 @@
 package migrations
 
 import (
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/entity"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/entity"
 	"gorm.io/gorm"
 )
 

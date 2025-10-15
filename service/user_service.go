@@ -3,11 +3,11 @@ package service
 import (
 	"context"
 
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/constants"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/dto"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/entity"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/repository"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/utils/mailer"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/constants"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/dto"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/entity"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/repository"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/utils/mailer"
 )
 
 type (

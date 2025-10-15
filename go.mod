@@ -1,4 +1,4 @@
-module github.com/Shabrinashsf/ets-backend-webpro-c.git
+module github.com/Shabrinashsf/ets-backend-webpro-c
 
 go 1.24.4
 

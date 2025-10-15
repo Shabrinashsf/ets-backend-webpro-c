@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/config"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/utils"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/config"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/utils"
 	"gopkg.in/gomail.v2"
 )
 

@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/controller"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/service"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/controller"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/service"
 	"github.com/gin-gonic/gin"
 )
 

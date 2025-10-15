@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/dto"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/service"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/utils/response"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/dto"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/service"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/utils/response"
 	"github.com/gin-gonic/gin"
 )
 

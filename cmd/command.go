@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/migrations"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/migrations"
 	"gorm.io/gorm"
 )
 

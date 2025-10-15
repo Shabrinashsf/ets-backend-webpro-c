@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/constants"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/constants"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -32,7 +32,7 @@ func SetUpDatabaseConnection() *gorm.DB {
 		PreferSimpleProtocol: true,
 	}), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true,
+			SingularTable: false,
 		},
 	})
 	if err != nil {

@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/cmd"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/config"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/controller"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/middleware"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/repository"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/routes"
-	"github.com/Shabrinashsf/ets-backend-webpro-c.git/service"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/cmd"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/config"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/controller"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/middleware"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/repository"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/routes"
+	"github.com/Shabrinashsf/ets-backend-webpro-c/service"
 	"github.com/gin-gonic/gin"
 )
 
