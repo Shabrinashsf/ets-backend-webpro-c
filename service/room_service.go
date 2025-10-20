@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/Shabrinashsf/ets-backend-webpro-c/dto"
 	"github.com/Shabrinashsf/ets-backend-webpro-c/entity"
@@ -16,16 +17,19 @@ type (
 		UpdateRoom(ctx context.Context, req dto.UpdateRoomRequest, idparam string) (dto.AddRoomResponse, error)
 		DeleteRoom(ctx context.Context, idparam string) (dto.DeleteRoomResponse, error)
 		GetAllRoom(ctx context.Context, page, limit int) (dto.PaginatedRoomsResponse, error)
+		BookingRoom(ctx context.Context, req dto.BookingRoomRequest, userID string) (dto.BookingRoomResponse, error)
 	}
 
 	roomService struct {
 		roomRepo repository.RoomRepository
+		userRepo repository.UserRepository
 	}
 )
 
-func NewRoomService(roomRepo repository.RoomRepository) RoomService {
+func NewRoomService(roomRepo repository.RoomRepository, userRepo repository.UserRepository) RoomService {
 	return &roomService{
 		roomRepo: roomRepo,
+		userRepo: userRepo,
 	}
 }
 
@@ -134,5 +138,62 @@ func (s *roomService) GetAllRoom(ctx context.Context, page, limit int) (dto.Pagi
 	return dto.PaginatedRoomsResponse{
 		Data:       roomResponses,
 		Pagination: pagination.BuildPaginationResponse(page, limit, total),
+	}, nil
+}
+
+func (s *roomService) BookingRoom(ctx context.Context, req dto.BookingRoomRequest, userID string) (dto.BookingRoomResponse, error) {
+	room, err := s.roomRepo.GetRoomByID(ctx, nil, uuid.MustParse(req.RoomID))
+	if err != nil {
+		return dto.BookingRoomResponse{}, dto.ErrRoomNotFound
+	}
+
+	if room.Status == "booked" || room.Status == "maintenance" {
+		return dto.BookingRoomResponse{}, dto.ErrRoomNotAvailable
+	}
+
+	roomType, err := s.roomRepo.GetRoomTypeByID(ctx, nil, room.RoomTypeID)
+	if err != nil {
+		return dto.BookingRoomResponse{}, dto.ErrRoomTypeNotFound
+	}
+
+	user, err := s.userRepo.GetUserByID(ctx, nil, uuid.MustParse(userID))
+	if err != nil {
+		return dto.BookingRoomResponse{}, dto.ErrGetUserById
+	}
+
+	layout := time.RFC3339
+	checkInTime, err := time.Parse(layout, req.CheckIn)
+	if err != nil {
+		return dto.BookingRoomResponse{}, dto.ErrInvalidTimeFormat
+	}
+	checkOutTime, err := time.Parse(layout, req.CheckOut)
+	if err != nil {
+		return dto.BookingRoomResponse{}, dto.ErrInvalidTimeFormat
+	}
+
+	if !checkOutTime.After(checkInTime) {
+		return dto.BookingRoomResponse{}, dto.ErrCheckOutAfterCheckIn
+	}
+
+	bookRoom := entity.Booking{
+		Name:     req.Name,
+		UserID:   user.ID,
+		RoomID:   room.ID,
+		Price:    roomType.Price,
+		CheckIn:  checkInTime,
+		CheckOut: checkOutTime,
+	}
+
+	savedBooking, err := s.roomRepo.BookingRoom(ctx, nil, bookRoom)
+	if err != nil {
+		return dto.BookingRoomResponse{}, dto.ErrBookedRoom
+	}
+
+	return dto.BookingRoomResponse{
+		RoomNumber: room.Number,
+		Name:       savedBooking.Name,
+		CheckIn:    savedBooking.CheckIn.Format(layout),
+		CheckOut:   savedBooking.CheckOut.Format(layout),
+		Price:      savedBooking.Price,
 	}, nil
 }

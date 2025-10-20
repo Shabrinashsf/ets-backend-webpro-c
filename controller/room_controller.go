@@ -16,6 +16,7 @@ type (
 		UpdateRoom(ctx *gin.Context)
 		DeleteRoom(ctx *gin.Context)
 		GetAllRoom(ctx *gin.Context)
+		BookingRoom(ctx *gin.Context)
 	}
 
 	roomController struct {
@@ -93,5 +94,26 @@ func (c *roomController) GetAllRoom(ctx *gin.Context) {
 	}
 
 	res := response.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_ROOMS, result)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *roomController) BookingRoom(ctx *gin.Context) {
+	var room dto.BookingRoomRequest
+	userID := ctx.MustGet("user_id").(string)
+
+	if err := ctx.ShouldBind(&room); err != nil {
+		res := response.BuildResponseFailed(dto.MESSAGE_FAILED_ADD_ROOM, err.Error(), nil)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	result, err := c.roomService.BookingRoom(ctx.Request.Context(), room, userID)
+	if err != nil {
+		res := response.BuildResponseFailed(dto.MESSAGE_FAILED_BOOKING_ROOM, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := response.BuildResponseSuccess(dto.MESSAGE_SUCCESS_BOOKING_ROOM, result)
 	ctx.JSON(http.StatusOK, res)
 }

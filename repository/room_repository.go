@@ -17,6 +17,7 @@ type (
 		DeleteRoom(ctx context.Context, tx *gorm.DB, room entity.Room) error
 		GetRoomTypeByID(ctx context.Context, tx *gorm.DB, id uuid.UUID) (entity.RoomType, error)
 		GetAllRoom(ctx context.Context, tx *gorm.DB, offset, limit int) ([]entity.Room, int64, error)
+		BookingRoom(ctx context.Context, tx *gorm.DB, booking entity.Booking) (entity.Booking, error)
 	}
 
 	roomRepository struct {
@@ -122,4 +123,16 @@ func (r *roomRepository) GetAllRoom(ctx context.Context, tx *gorm.DB, offset, li
 	}
 
 	return rooms, total, nil
+}
+
+func (r *roomRepository) BookingRoom(ctx context.Context, tx *gorm.DB, booking entity.Booking) (entity.Booking, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	if err := tx.WithContext(ctx).Create(&booking).Error; err != nil {
+		return entity.Booking{}, err
+	}
+
+	return booking, nil
 }

@@ -11,6 +11,7 @@ func Migrate(db *gorm.DB) error {
 		&entity.User{},
 		&entity.Room{},
 		&entity.RoomType{},
+		&entity.Booking{},
 	); err != nil {
 		return err
 	}
