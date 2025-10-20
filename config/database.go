@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/Shabrinashsf/ets-backend-webpro-c/constants"
@@ -15,7 +16,7 @@ func SetUpDatabaseConnection() *gorm.DB {
 	if os.Getenv("APP_ENV") != constants.ENUM_RUN_PRODUCTION {
 		err := godotenv.Load(".env")
 		if err != nil {
-			panic(err)
+			log.Println("No .env file found, continuing...")
 		}
 	}
 
